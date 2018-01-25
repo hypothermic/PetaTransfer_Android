@@ -28,8 +28,11 @@ public class hoofdvenster extends AppCompatActivity {
     protected EditText sendPortField;
     protected EditText sendFilePathField;
     protected static int srvRunning = 0;
+    protected static int clRunning = 0;
+    protected EditText saveAsField;
     protected Button rqpButton;
     public String sdLoc = System.getenv("EXTERNAL_STORAGE");
+    protected EditText remoteAddrField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,8 @@ public class hoofdvenster extends AppCompatActivity {
         logField = findViewById(R.id.logField);
         sendPortField = findViewById(R.id.sendPortField);
         sendFilePathField = findViewById(R.id.sendFilePathField); sendFilePathField.setText(sdLoc);
+        remoteAddrField = findViewById(R.id.remoteAddrField);
+        saveAsField = findViewById(R.id.saveAsField); saveAsField.setText(sdLoc + "/x");
         rqpButton = findViewById(R.id.rqPerms);
 
         rqpButton.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +68,7 @@ public class hoofdvenster extends AppCompatActivity {
                     port = Integer.parseInt(sendPortField.getText().toString());
                     path = sendFilePathField.getText().toString();
                 } catch (Exception x) {
-                    logField.append("\n[CRIITICAL] Error: " + x + " at \n" + x.getMessage());
+                    logField.append("\n[CRIITICAL] Error: " + x + " at \n" + x.getMessage() + "\n\nExiting!\n\n"); return;
                 }
                 if (true) {
                     Toast.makeText(getApplicationContext(), "sending...", Toast.LENGTH_LONG).show();
@@ -72,7 +77,6 @@ public class hoofdvenster extends AppCompatActivity {
                         final pttPSender x = new pttPSender(logField); final int xport = port; final String xpath = path;
                         new Thread() {
                             public void run() {
-                                System.out.println("blah");
                                 try {
                                     x.send(xport, xpath);
                                 } catch (Throwable x) {
@@ -92,6 +96,7 @@ public class hoofdvenster extends AppCompatActivity {
 
             }
         });
+
     }
     final private int REQUEST_CODE_ASK_PERMISSIONS_W = 123;
     final private int REQUEST_CODE_ASK_PERMISSIONS_R = 124;
@@ -105,7 +110,7 @@ public class hoofdvenster extends AppCompatActivity {
         }
     }
 
-    //TODO
+    /* TODO
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -126,5 +131,5 @@ public class hoofdvenster extends AppCompatActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
+    }*/
 }
