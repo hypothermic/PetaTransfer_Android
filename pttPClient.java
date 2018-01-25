@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
  * https://github.com/hypothermic
  */
 
-public class pttPClient extends hoofdvenster{
+public class pttPClient extends hoofdvenster {
 
     private static TextView logView;
 
@@ -34,7 +34,7 @@ public class pttPClient extends hoofdvenster{
             }
         });
     }
-    public void receiveFile(String ipAddress,int portNo,String fileLocation) throws IOException {
+    public void receiveFile(String ipAddress, int portNo, String fileLocation, int byteArraySize) throws IOException {
         int bytesRead=0;
         int current = 0;
         FileOutputStream fileOutputStream = null;
@@ -43,14 +43,15 @@ public class pttPClient extends hoofdvenster{
         try {
             long allocatedMemory = (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
             long freeMemory = Runtime.getRuntime().maxMemory() - allocatedMemory;
-            if (freeMemory < 2000000000) {
-                xlog("[CLIENT] Not enough memory availible. Exiting.");
+            System.gc(); //TODO: debug ram probleem
+            if (freeMemory < byteArraySize) {
+                xlog("\n[CLIENT] Not enough memory availible. Exiting.");
                 return;
             }
-            socket = new Socket(ipAddress,portNo);
+            socket = new Socket(ipAddress, portNo);
             xlog("\n[CLIENT] Connected to " + ipAddress);
 
-            byte [] byteArray  = new byte [2000000000]; //6022386 ~= 6MB, 2000000000 ~= 2GB
+            byte[] byteArray  = new byte [byteArraySize]; //6022386 ~= 6MB, 2000000000 ~= 2GB, android low ram standard= 104857600 ~= 100 MB
             xlog("\n[CLIENT] Downloading file");
             InputStream inputStream = socket.getInputStream();
             fileOutputStream = new FileOutputStream(fileLocation);
@@ -68,7 +69,7 @@ public class pttPClient extends hoofdvenster{
             // ram cleanup
             byteArray = null;
             System.gc();
-            xlog("\n[CLIENT] Content saved as \'" + fileLocation  + "\', total of \'" + pttPFormatSize.formatDecimaal(current) + "\'");
+            xlog("\n[CLIENT] Content saved as \'" + fileLocation  + "\', total of \'" + pttPFormatSize.formatDecimaal(current) + "\'"); clRunning = 0;
         } catch (UnknownHostException xh) {
             xlog("[CLIENT] Exception: could not reach server");
         } catch (ConnectException xc) {
